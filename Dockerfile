@@ -23,7 +23,8 @@ ARG CF_BUILDPACK=master
 # 6. Update permissions for /opt/mendix so that the app can run as a non-root user
 # 7. Allow the root group to modify /etc/passwd so that the startup script can update the non-root uid
 RUN mkdir -p /opt/mendix/buildpack /opt/mendix/build &&\
-   useradd -r -g root -d /opt/mendix/build mendix &&\
+   #useradd -r -g root -d /opt/mendix/build mendix &&\
+   useradd -r -U -u 1050 -d /opt/mendix/build mendix &&\
    echo "CF Buildpack version ${CF_BUILDPACK}" &&\
    wget -qO- https://github.com/mendix/cf-mendix-buildpack/archive/${CF_BUILDPACK}.tar.gz | tar xvz -C /opt/mendix/buildpack --strip-components 1 &&\
    chown -R mendix:root /opt/mendix &&\
@@ -58,7 +59,8 @@ COPY --chown=mendix:root scripts/startup /opt/mendix/build
 COPY --chown=mendix:root scripts/vcap_application.json /opt/mendix/build
 WORKDIR /opt/mendix/build
 
-USER mendix
+#USER mendix
+USER 1050
 
 ENV HOME "/opt/mendix/build"
 
